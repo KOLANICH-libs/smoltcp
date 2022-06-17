@@ -666,12 +666,12 @@ impl Repr {
     }
 
     /// Return the length of a header that will be emitted from this high-level representation.
-    pub fn buffer_len(&self) -> usize {
+    pub fn header_len(&self) -> usize {
         match *self {
             #[cfg(feature = "proto-ipv4")]
             Repr::Ipv4(repr) => repr.buffer_len(),
             #[cfg(feature = "proto-ipv6")]
-            Repr::Ipv6(repr) => repr.buffer_len(),
+            Repr::Ipv6(repr) => repr.header_len(),
         }
     }
 
@@ -693,8 +693,8 @@ impl Repr {
     /// high-level representation.
     ///
     /// This is the same as `repr.buffer_len() + repr.payload_len()`.
-    pub fn total_len(&self) -> usize {
-        self.buffer_len() + self.payload_len()
+    pub fn buffer_len(&self) -> usize {
+        self.header_len() + self.payload_len()
     }
 }
 
