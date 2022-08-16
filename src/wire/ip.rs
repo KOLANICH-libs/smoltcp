@@ -671,7 +671,7 @@ impl Repr {
             #[cfg(feature = "proto-ipv4")]
             Repr::Ipv4(repr) => repr.buffer_len(),
             #[cfg(feature = "proto-ipv6")]
-            Repr::Ipv6(repr) => repr.header_len(),
+            Repr::Ipv6(repr) => repr.buffer_len(),
         }
     }
 
