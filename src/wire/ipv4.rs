@@ -939,7 +939,7 @@ mod test {
         bytes.extend(&PACKET_BYTES[..]);
         Packet::new_unchecked(&mut bytes).set_total_len(128);
 
-        assert_eq!(Packet::new_checked(&bytes).unwrap_err(), Error);
+        assert_eq!(Packet::new_checked(&bytes).unwrap_err(), ResultCode);
     }
 
     static REPR_PACKET_BYTES: [u8; 24] = [

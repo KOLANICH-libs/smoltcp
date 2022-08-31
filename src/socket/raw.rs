@@ -14,26 +14,28 @@ use crate::wire::{Ipv4Packet, Ipv4Repr};
 #[cfg(feature = "proto-ipv6")]
 use crate::wire::{Ipv6Packet, Ipv6Repr};
 
-/// Error returned by [`Socket::bind`]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub enum BindError {
-    InvalidState,
-    Unaddressable,
+use crate::result_codes::ResultCode;
+
+error_code_enum! {
+    /// ResultCode returned by [`Socket::bind`]
+    pub enum BindError {
+        InvalidState,
+        Unaddressable,
+    }
 }
 
-/// Error returned by [`Socket::send`]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub enum SendError {
-    BufferFull,
+error_code_enum! {
+    /// ResultCode returned by [`Socket::send`]
+    pub enum SendError {
+        BufferFull,
+    }
 }
 
-/// Error returned by [`Socket::recv`]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub enum RecvError {
-    Exhausted,
+error_code_enum! {
+    /// ResultCode returned by [`Socket::recv`]
+    pub enum RecvError {
+        Exhausted,
+    }
 }
 
 /// A UDP packet metadata.
@@ -164,8 +166,8 @@ impl<'a> Socket<'a> {
 
     /// Enqueue a packet to send, and return a pointer to its payload.
     ///
-    /// This function returns `Err(Error::Exhausted)` if the transmit buffer is full,
-    /// and `Err(Error::Truncated)` if there is not enough transmit buffer capacity
+    /// This function returns `Err(ResultCode::Exhausted)` if the transmit buffer is full,
+    /// and `Err(ResultCode::Truncated)` if there is not enough transmit buffer capacity
     /// to ever send this packet.
     ///
     /// If the buffer is filled in a way that does not match the socket's
@@ -221,7 +223,7 @@ impl<'a> Socket<'a> {
 
     /// Dequeue a packet, and return a pointer to the payload.
     ///
-    /// This function returns `Err(Error::Exhausted)` if the receive buffer is empty.
+    /// This function returns `Err(ResultCode::Exhausted)` if the receive buffer is empty.
     ///
     /// **Note:** The IP header is parsed and re-serialized, and may not match
     /// the header actually received bit for bit.
@@ -382,6 +384,7 @@ impl<'a> Socket<'a> {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::result_codes::ResultCode;
     use crate::wire::IpRepr;
     #[cfg(feature = "proto-ipv4-tx-fragmentation")]
     use crate::wire::IPV4_FRAGMENTATION_PARAMS_DONT_FRAGMENT;
@@ -389,7 +392,6 @@ mod test {
     use crate::wire::{Ipv4Address, Ipv4Repr};
     #[cfg(feature = "proto-ipv6")]
     use crate::wire::{Ipv6Address, Ipv6Repr};
-    use crate::Error;
 
     fn buffer(packets: usize) -> PacketBuffer<'static> {
         PacketBuffer::new(vec![PacketMetadata::EMPTY; packets], vec![0; 48 * packets])
@@ -488,7 +490,7 @@ mod test {
                     assert!(socket.can_send());
                     assert_eq!(
                         socket.dispatch(&mut cx, |_, _| unreachable!()),
-                        Ok::<_, Error>(())
+                        Ok::<_, ResultCode>(())
                     );
 
                     assert_eq!(socket.send_slice(&$packet[..]), Ok(()));
@@ -499,9 +501,9 @@ mod test {
                         socket.dispatch(&mut cx, |_, (ip_repr, ip_payload)| {
                             assert_eq!(ip_repr, $hdr);
                             assert_eq!(ip_payload, &$payload);
-                            Err(Error::Unaddressable)
+                            Err(ResultCode::Unaddressable)
                         }),
-                        Err(Error::Unaddressable)
+                        Err(ResultCode::Unaddressable)
                     );
                     assert!(!socket.can_send());
 
@@ -509,7 +511,7 @@ mod test {
                         socket.dispatch(&mut cx, |_, (ip_repr, ip_payload)| {
                             assert_eq!(ip_repr, $hdr);
                             assert_eq!(ip_payload, &$payload);
-                            Ok::<_, Error>(())
+                            Ok::<_, ResultCode>(())
                         }),
                         Ok(())
                     );
@@ -576,7 +578,7 @@ mod test {
             assert_eq!(socket.send_slice(&wrong_version[..]), Ok(()));
             assert_eq!(
                 socket.dispatch(&mut cx, |_, _| unreachable!()),
-                Ok::<_, Error>(())
+                Ok::<_, ResultCode>(())
             );
 
             let mut wrong_protocol = ipv4_locals::PACKET_BYTES;
@@ -585,7 +587,7 @@ mod test {
             assert_eq!(socket.send_slice(&wrong_protocol[..]), Ok(()));
             assert_eq!(
                 socket.dispatch(&mut cx, |_, _| unreachable!()),
-                Ok::<_, Error>(())
+                Ok::<_, ResultCode>(())
             );
         }
         #[cfg(feature = "proto-ipv6")]
@@ -599,7 +601,7 @@ mod test {
             assert_eq!(socket.send_slice(&wrong_version[..]), Ok(()));
             assert_eq!(
                 socket.dispatch(&mut cx, |_, _| unreachable!()),
-                Ok::<_, Error>(())
+                Ok::<_, ResultCode>(())
             );
 
             let mut wrong_protocol = ipv6_locals::PACKET_BYTES;
@@ -608,7 +610,7 @@ mod test {
             assert_eq!(socket.send_slice(&wrong_protocol[..]), Ok(()));
             assert_eq!(
                 socket.dispatch(&mut cx, |_, _| unreachable!()),
-                Ok::<_, Error>(())
+                Ok::<_, ResultCode>(())
             );
         }
     }

@@ -300,14 +300,14 @@ mod test {
         let len = bytes.len() as u8;
         Header::new_unchecked(&mut bytes).set_header_len(len + 1);
 
-        assert_eq!(Header::new_checked(&bytes).unwrap_err(), Error);
+        assert_eq!(Header::new_checked(&bytes).unwrap_err(), ResultCode);
 
         let mut bytes = vec![];
         bytes.extend(&REPR_PACKET_PAD12);
         let len = bytes.len() as u8;
         Header::new_unchecked(&mut bytes).set_header_len(len + 1);
 
-        assert_eq!(Header::new_checked(&bytes).unwrap_err(), Error);
+        assert_eq!(Header::new_checked(&bytes).unwrap_err(), ResultCode);
     }
 
     #[test]

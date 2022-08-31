@@ -630,7 +630,7 @@ impl<T: AsRef<[u8]>> PrettyPrint for NdiscOption<T> {
 
 #[cfg(test)]
 mod test {
-    use super::Error;
+    use super::ResultCode;
     use super::{NdiscOption, PrefixInfoFlags, PrefixInformation, Repr, Type};
     use crate::time::Duration;
     use crate::wire::{EthernetAddress, Ipv6Address};

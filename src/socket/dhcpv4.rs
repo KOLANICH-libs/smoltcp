@@ -675,8 +675,8 @@ mod test {
     use std::ops::{Deref, DerefMut};
 
     use super::*;
+    use crate::result_codes::ResultCode;
     use crate::wire::EthernetAddress;
-    use crate::Error;
 
     // =========================================================================================//
     // Helper functions
@@ -746,7 +746,7 @@ mod test {
                         None => panic!("Too many reprs emitted"),
                     }
                     i += 1;
-                    Ok::<_, Error>(())
+                    Ok::<_, ResultCode>(())
                 });
         }
 

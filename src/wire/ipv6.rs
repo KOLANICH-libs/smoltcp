@@ -708,7 +708,7 @@ impl<T: AsRef<[u8]>> PrettyPrint for Packet<T> {
 
 #[cfg(test)]
 mod test {
-    use super::Error;
+    use super::ResultCode;
     use super::{Address, Cidr};
     use super::{Packet, Protocol, Repr};
     use crate::wire::pretty_print::PrettyPrinter;
@@ -1128,7 +1128,7 @@ mod test {
         bytes.extend(&REPR_PACKET_BYTES[..]);
         Packet::new_unchecked(&mut bytes).set_payload_len(0x80);
 
-        assert_eq!(Packet::new_checked(&bytes).unwrap_err(), Error);
+        assert_eq!(Packet::new_checked(&bytes).unwrap_err(), ResultCode);
     }
 
     #[test]
