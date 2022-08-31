@@ -17,39 +17,41 @@ use crate::wire::{
     TCP_HEADER_LEN,
 };
 
+use crate::result_codes::Error;
+
 macro_rules! tcp_trace {
     ($($arg:expr),*) => (net_log!(trace, $($arg),*));
 }
 
-/// Error returned by [`Socket::listen`]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub enum ListenError {
-    InvalidState,
-    Unaddressable,
+error_code_enum! {
+    /// Error returned by [`Socket::listen`]
+    pub enum ListenError {
+        InvalidState,
+        Unaddressable,
+    }
 }
 
-/// Error returned by [`Socket::connect`]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub enum ConnectError {
-    InvalidState,
-    Unaddressable,
+error_code_enum! {
+    /// Error returned by [`Socket::connect`]
+    pub enum ConnectError {
+        InvalidState,
+        Unaddressable,
+    }
 }
 
-/// Error returned by [`Socket::send`]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub enum SendError {
-    InvalidState,
+error_code_enum! {
+    /// Error returned by [`Socket::send`]
+    pub enum SendError {
+        InvalidState,
+    }
 }
 
-/// Error returned by [`Socket::recv`]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub enum RecvError {
-    InvalidState,
-    Finished,
+error_code_enum! {
+    /// Error returned by [`Socket::recv`]
+    pub enum RecvError {
+        InvalidState,
+        Finished,
+    }
 }
 
 /// A TCP socket ring buffer.
@@ -2278,8 +2280,8 @@ impl<'a> fmt::Write for Socket<'a> {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::result_codes::Error;
     use crate::wire::IpRepr;
-    use crate::Error;
     use core::i32;
     use std::ops::{Deref, DerefMut};
     use std::vec::Vec;

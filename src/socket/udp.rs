@@ -9,33 +9,35 @@ use crate::socket::WakerRegistration;
 use crate::storage::Empty;
 use crate::wire::{IpEndpoint, IpListenEndpoint, IpProtocol, IpRepr, UdpRepr};
 
+use crate::result_codes::Error;
+
 /// A UDP packet metadata.
 pub type PacketMetadata = crate::storage::PacketMetadata<IpEndpoint>;
 
 /// A UDP packet ring buffer.
 pub type PacketBuffer<'a> = crate::storage::PacketBuffer<'a, IpEndpoint>;
 
-/// Error returned by [`Socket::bind`]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub enum BindError {
-    InvalidState,
-    Unaddressable,
+error_code_enum! {
+    /// Error returned by [`Socket::bind`]
+    pub enum BindError {
+        InvalidState,
+        Unaddressable,
+    }
 }
 
-/// Error returned by [`Socket::send`]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub enum SendError {
-    Unaddressable,
-    BufferFull,
+error_code_enum! {
+    /// Error returned by [`Socket::send`]
+    pub enum SendError {
+        Unaddressable,
+        BufferFull,
+    }
 }
 
-/// Error returned by [`Socket::recv`]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub enum RecvError {
-    Exhausted,
+error_code_enum! {
+    /// Error returned by [`Socket::recv`]
+    pub enum RecvError {
+        Exhausted,
+    }
 }
 
 /// A User Datagram Protocol socket.
@@ -487,8 +489,8 @@ impl<'a> Socket<'a> {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::result_codes::Error;
     use crate::wire::{IpRepr, UdpRepr};
-    use crate::Error;
 
     fn buffer(packets: usize) -> PacketBuffer<'static> {
         PacketBuffer::new(vec![PacketMetadata::EMPTY; packets], vec![0; 16 * packets])

@@ -4,6 +4,7 @@ use core::task::Waker;
 use heapless::Vec;
 use managed::ManagedSlice;
 
+use crate::result_codes::Error;
 use crate::socket::{Context, PollAt};
 use crate::time::{Duration, Instant};
 use crate::wire::dns::{Flags, Opcode, Packet, Question, Rcode, Record, RecordData, Repr, Type};
@@ -31,22 +32,23 @@ const MDNS_IPV6_ADDR: IpAddress = IpAddress::Ipv6(crate::wire::Ipv6Address([
 const MDNS_IPV4_ADDR: IpAddress = IpAddress::Ipv4(crate::wire::Ipv4Address([224, 0, 0, 251]));
 
 /// Error returned by [`Socket::start_query`]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub enum StartQueryError {
-    NoFreeSlot,
-    InvalidName,
-    NameTooLong,
+error_code_enum! {
+    /// Error returned by [`Socket::start_query`]
+    pub enum StartQueryError {
+        NoFreeSlot,
+        InvalidName,
+        NameTooLong,
+    }
 }
 
-/// Error returned by [`Socket::get_query_result`]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub enum GetQueryResultError {
-    /// Query is not done yet.
-    Pending,
-    /// Query failed.
-    Failed,
+error_code_enum! {
+    /// Error returned by [`Socket::get_query_result`]
+    pub enum GetQueryResultError {
+        /// Query is not done yet.
+        Pending,
+        /// Query failed.
+        Failed,
+    }
 }
 
 /// State for an in-progress DNS query.

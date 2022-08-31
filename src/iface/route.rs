@@ -2,12 +2,12 @@ use crate::time::Instant;
 use core::ops::Bound;
 use managed::ManagedMap;
 
+use crate::result_codes::{Error, Result};
 use crate::wire::{IpAddress, IpCidr};
 #[cfg(feature = "proto-ipv4")]
 use crate::wire::{Ipv4Address, Ipv4Cidr};
 #[cfg(feature = "proto-ipv6")]
 use crate::wire::{Ipv6Address, Ipv6Cidr};
-use crate::{Error, Result};
 
 /// A prefix of addresses that should be routed via a router
 #[derive(Debug, Clone, Copy)]

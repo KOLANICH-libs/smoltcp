@@ -221,8 +221,8 @@ pub mod frag {
 
     use super::{DISPATCH_FIRST_FRAGMENT_HEADER, DISPATCH_FRAGMENT_HEADER};
     use crate::{
+        result_codes::{Error, Result},
         wire::{Ieee802154Address, Ieee802154Repr},
-        Error, Result,
     };
     use byteorder::{ByteOrder, NetworkEndian};
 

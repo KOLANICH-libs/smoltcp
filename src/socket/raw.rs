@@ -14,26 +14,28 @@ use crate::wire::{Ipv4Packet, Ipv4Repr};
 #[cfg(feature = "proto-ipv6")]
 use crate::wire::{Ipv6Packet, Ipv6Repr};
 
-/// Error returned by [`Socket::bind`]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub enum BindError {
-    InvalidState,
-    Unaddressable,
+use crate::result_codes::Error;
+
+error_code_enum! {
+    /// Error returned by [`Socket::bind`]
+    pub enum BindError {
+        InvalidState,
+        Unaddressable,
+    }
 }
 
-/// Error returned by [`Socket::send`]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub enum SendError {
-    BufferFull,
+error_code_enum! {
+    /// Error returned by [`Socket::send`]
+    pub enum SendError {
+        BufferFull,
+    }
 }
 
-/// Error returned by [`Socket::recv`]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub enum RecvError {
-    Exhausted,
+error_code_enum! {
+    /// Error returned by [`Socket::recv`]
+    pub enum RecvError {
+        Exhausted,
+    }
 }
 
 /// A UDP packet metadata.
@@ -382,12 +384,12 @@ impl<'a> Socket<'a> {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::result_codes::Error;
     use crate::wire::IpRepr;
     #[cfg(feature = "proto-ipv4")]
     use crate::wire::{Ipv4Address, Ipv4Repr};
     #[cfg(feature = "proto-ipv6")]
     use crate::wire::{Ipv6Address, Ipv6Repr};
-    use crate::Error;
 
     fn buffer(packets: usize) -> PacketBuffer<'static> {
         PacketBuffer::new(vec![PacketMetadata::EMPTY; packets], vec![0; 48 * packets])

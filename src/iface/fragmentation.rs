@@ -4,10 +4,9 @@ use core::fmt;
 
 use managed::{ManagedMap, ManagedSlice};
 
+use crate::result_codes::{Error, Result};
 use crate::storage::Assembler;
 use crate::time::{Duration, Instant};
-use crate::Error;
-use crate::Result;
 
 /// Holds different fragments of one packet, used for assembling fragmented packets.
 ///

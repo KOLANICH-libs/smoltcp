@@ -691,8 +691,8 @@ mod test {
     use std::ops::{Deref, DerefMut};
 
     use super::*;
+    use crate::result_codes::Error;
     use crate::wire::EthernetAddress;
-    use crate::Error;
 
     // =========================================================================================//
     // Helper functions

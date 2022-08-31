@@ -13,6 +13,7 @@ use crate::iface::Routes;
 use crate::iface::{NeighborAnswer, NeighborCache};
 use crate::phy::{ChecksumCapabilities, Device, DeviceCapabilities, Medium, RxToken, TxToken};
 use crate::rand::Rand;
+use crate::result_codes::{Error, Result};
 #[cfg(feature = "socket-dhcpv4")]
 use crate::socket::dhcpv4;
 #[cfg(feature = "socket-dns")]
@@ -20,7 +21,6 @@ use crate::socket::dns;
 use crate::socket::*;
 use crate::time::{Duration, Instant};
 use crate::wire::*;
-use crate::{Error, Result};
 
 pub(crate) struct FragmentsBuffer<'a> {
     #[cfg(feature = "proto-ipv4-fragmentation")]
@@ -3815,9 +3815,9 @@ mod test {
     #[cfg(feature = "medium-ethernet")]
     use crate::iface::NeighborCache;
     use crate::phy::{ChecksumCapabilities, Loopback};
+    use crate::result_codes::{Error, Result};
     #[cfg(feature = "proto-igmp")]
     use crate::time::Instant;
-    use crate::{Error, Result};
 
     #[allow(unused)]
     fn fill_slice(s: &mut [u8], val: u8) {

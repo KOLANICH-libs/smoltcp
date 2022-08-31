@@ -16,27 +16,29 @@ use crate::wire::{Icmpv6Packet, Icmpv6Repr, Ipv6Repr};
 use crate::wire::{IpAddress, IpListenEndpoint, IpProtocol, IpRepr};
 use crate::wire::{UdpPacket, UdpRepr};
 
-/// Error returned by [`Socket::bind`]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub enum BindError {
-    InvalidState,
-    Unaddressable,
+use crate::result_codes::Error;
+
+error_code_enum! {
+    /// Error returned by [`Socket::bind`]
+    pub enum BindError {
+        InvalidState,
+        Unaddressable,
+    }
 }
 
-/// Error returned by [`Socket::send`]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub enum SendError {
-    Unaddressable,
-    BufferFull,
+error_code_enum! {
+    /// Error returned by [`Socket::send`]
+    pub enum SendError {
+        Unaddressable,
+        BufferFull,
+    }
 }
 
-/// Error returned by [`Socket::recv`]
-#[derive(Debug, PartialEq, Eq, Clone, Copy)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub enum RecvError {
-    Exhausted,
+error_code_enum! {
+    /// Error returned by [`Socket::recv`]
+    pub enum RecvError {
+        Exhausted,
+    }
 }
 
 /// Type of endpoint to bind the ICMP socket to. See [IcmpSocket::bind] for
@@ -618,8 +620,8 @@ mod tests_common {
 #[cfg(all(test, feature = "proto-ipv4"))]
 mod test_ipv4 {
     use super::tests_common::*;
+    use crate::result_codes::Error;
     use crate::wire::{Icmpv4DstUnreachable, IpEndpoint, Ipv4Address};
-    use crate::Error;
 
     const REMOTE_IPV4: Ipv4Address = Ipv4Address([192, 168, 1, 2]);
     const LOCAL_IPV4: Ipv4Address = Ipv4Address([192, 168, 1, 1]);
@@ -860,8 +862,8 @@ mod test_ipv4 {
 mod test_ipv6 {
     use super::tests_common::*;
 
+    use crate::result_codes::Error;
     use crate::wire::{Icmpv6DstUnreachable, IpEndpoint, Ipv6Address};
-    use crate::Error;
 
     const REMOTE_IPV6: Ipv6Address =
         Ipv6Address([0xfe, 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2]);
