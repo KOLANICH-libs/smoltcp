@@ -43,7 +43,7 @@ enum_with_unknown! {
 
 impl AddressingMode {
     /// Return the size in octets of the address.
-    const fn size(&self) -> usize {
+    fn size(&self) -> usize {
         match self {
             AddressingMode::Absent => 0,
             AddressingMode::Short => 2,
@@ -110,11 +110,11 @@ impl Address {
         *self == Self::BROADCAST
     }
 
-    const fn short_from_bytes(a: [u8; 2]) -> Self {
+    fn short_from_bytes(a: [u8; 2]) -> Self {
         Self::Short(a)
     }
 
-    const fn extended_from_bytes(a: [u8; 8]) -> Self {
+    fn extended_from_bytes(a: [u8; 8]) -> Self {
         Self::Extended(a)
     }
 
@@ -132,7 +132,7 @@ impl Address {
         }
     }
 
-    pub const fn as_bytes(&self) -> &[u8] {
+    pub fn as_bytes(&self) -> &[u8] {
         match self {
             Address::Absent => &[],
             Address::Short(value) => value,
@@ -231,7 +231,7 @@ macro_rules! set_fc_bit_field {
 
 impl<T: AsRef<[u8]>> Frame<T> {
     /// Input a raw octet buffer with Ethernet frame structure.
-    pub const fn new_unchecked(buffer: T) -> Frame<T> {
+    pub fn new_unchecked(buffer: T) -> Frame<T> {
         Frame { buffer }
     }
 
@@ -791,7 +791,7 @@ impl Repr {
 
     /// Return the length of a buffer required to hold a packet with the payload of a given length.
     #[inline]
-    pub const fn buffer_len(&self) -> usize {
+    pub fn buffer_len(&self) -> usize {
         3 + 2
             + match self.dst_addr {
                 Some(Address::Absent) | None => 0,

@@ -284,7 +284,7 @@ pub enum HardwareAddress {
 
 #[cfg(any(feature = "medium-ethernet", feature = "medium-ieee802154"))]
 impl HardwareAddress {
-    pub const fn as_bytes(&self) -> &[u8] {
+    pub fn as_bytes(&self) -> &[u8] {
         match self {
             #[cfg(feature = "medium-ethernet")]
             HardwareAddress::Ethernet(addr) => addr.as_bytes(),
@@ -372,11 +372,11 @@ impl RawHardwareAddress {
         &self.data[..self.len as usize]
     }
 
-    pub const fn len(&self) -> usize {
+    pub fn len(&self) -> usize {
         self.len as usize
     }
 
-    pub const fn is_empty(&self) -> bool {
+    pub fn is_empty(&self) -> bool {
         self.len == 0
     }
 
