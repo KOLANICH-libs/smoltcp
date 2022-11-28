@@ -29,9 +29,9 @@ impl Loopback {
     }
 }
 
-impl Device for Loopback {
-    type RxToken<'a> = RxToken;
-    type TxToken<'a> = TxToken<'a>;
+impl<'a> Device<'a> for Loopback {
+    type RxToken = RxToken;
+    type TxToken = TxToken<'a>;
 
     fn capabilities(&self) -> DeviceCapabilities {
         DeviceCapabilities {
@@ -41,7 +41,7 @@ impl Device for Loopback {
         }
     }
 
-    fn receive(&mut self) -> Option<(Self::RxToken<'_>, Self::TxToken<'_>)> {
+    fn receive(&'a mut self) -> Option<(Self::RxToken, Self::TxToken)> {
         self.queue.pop_front().map(move |buffer| {
             let rx = RxToken { buffer };
             let tx = TxToken {
@@ -51,7 +51,7 @@ impl Device for Loopback {
         })
     }
 
-    fn transmit(&mut self) -> Option<Self::TxToken<'_>> {
+    fn transmit(&'a mut self) -> Option<Self::TxToken> {
         Some(TxToken {
             queue: &mut self.queue,
         })

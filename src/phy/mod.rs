@@ -38,16 +38,16 @@ impl<'a> StmPhy {
     }
 }
 
-impl phy::Device for StmPhy {
-    type RxToken<'a> = StmPhyRxToken<'a> where Self: 'a;
-    type TxToken<'a> = StmPhyTxToken<'a> where Self: 'a;
+impl<'a> phy::Device<'a> for StmPhy {
+    type RxToken = StmPhyRxToken<'a>;
+    type TxToken = StmPhyTxToken<'a>;
 
-    fn receive(&mut self) -> Option<(Self::RxToken<'_>, Self::TxToken<'_>)> {
+    fn receive(&'a mut self) -> Option<(Self::RxToken, Self::TxToken)> {
         Some((StmPhyRxToken(&mut self.rx_buffer[..]),
               StmPhyTxToken(&mut self.tx_buffer[..])))
     }
 
-    fn transmit(&mut self) -> Option<Self::TxToken<'_>> {
+    fn transmit(&'a mut self) -> Option<Self::TxToken> {
         Some(StmPhyTxToken(&mut self.tx_buffer[..]))
     }
 
@@ -308,13 +308,9 @@ impl Default for Medium {
 /// The interface is based on _tokens_, which are types that allow to receive/transmit a
 /// single packet. The `receive` and `transmit` functions only construct such tokens, the
 /// real sending/receiving operation are performed when the tokens are consumed.
-pub trait Device {
-    type RxToken<'a>: RxToken
-    where
-        Self: 'a;
-    type TxToken<'a>: TxToken
-    where
-        Self: 'a;
+pub trait Device<'a> {
+    type RxToken: RxToken + 'a;
+    type TxToken: TxToken + 'a;
 
     /// Construct a token pair consisting of one receive token and one transmit token.
     ///
@@ -322,10 +318,10 @@ pub trait Device {
     /// on the contents of the received packet. For example, this makes it possible to
     /// handle arbitrarily large ICMP echo ("ping") requests, where the all received bytes
     /// need to be sent back, without heap allocation.
-    fn receive(&mut self) -> Option<(Self::RxToken<'_>, Self::TxToken<'_>)>;
+    fn receive(&'a mut self) -> Option<(Self::RxToken, Self::TxToken)>;
 
     /// Construct a transmit token.
-    fn transmit(&mut self) -> Option<Self::TxToken<'_>>;
+    fn transmit(&'a mut self) -> Option<Self::TxToken>;
 
     /// Get a description of device capabilities.
     fn capabilities(&self) -> DeviceCapabilities;

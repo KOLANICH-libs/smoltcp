@@ -54,13 +54,9 @@ impl RawSocket {
     }
 }
 
-impl Device for RawSocket {
-    type RxToken<'a> = RxToken
-    where
-        Self: 'a;
-    type TxToken<'a> = TxToken
-    where
-        Self: 'a;
+impl<'a> Device<'a> for RawSocket {
+    type RxToken = RxToken;
+    type TxToken = TxToken;
 
     fn capabilities(&self) -> DeviceCapabilities {
         DeviceCapabilities {
@@ -70,7 +66,7 @@ impl Device for RawSocket {
         }
     }
 
-    fn receive(&mut self) -> Option<(Self::RxToken<'_>, Self::TxToken<'_>)> {
+    fn receive(&'a mut self) -> Option<(Self::RxToken, Self::TxToken)> {
         let mut lower = self.lower.borrow_mut();
         let mut buffer = vec![0; self.mtu];
         match lower.recv(&mut buffer[..]) {
@@ -87,7 +83,7 @@ impl Device for RawSocket {
         }
     }
 
-    fn transmit(&mut self) -> Option<Self::TxToken<'_>> {
+    fn transmit(&'a mut self) -> Option<Self::TxToken> {
         Some(TxToken {
             lower: self.lower.clone(),
         })
