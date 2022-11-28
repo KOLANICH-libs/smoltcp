@@ -40,9 +40,9 @@ impl TunTapInterface {
     }
 }
 
-impl Device for TunTapInterface {
-    type RxToken<'a> = RxToken;
-    type TxToken<'a> = TxToken;
+impl<'a> Device<'a> for TunTapInterface {
+    type RxToken = RxToken;
+    type TxToken = TxToken;
 
     fn capabilities(&self) -> DeviceCapabilities {
         DeviceCapabilities {
@@ -52,7 +52,7 @@ impl Device for TunTapInterface {
         }
     }
 
-    fn receive(&mut self) -> Option<(Self::RxToken<'_>, Self::TxToken<'_>)> {
+    fn receive(&'a mut self) -> Option<(Self::RxToken, Self::TxToken)> {
         let mut lower = self.lower.borrow_mut();
         let mut buffer = vec![0; self.mtu];
         match lower.recv(&mut buffer[..]) {
@@ -69,7 +69,7 @@ impl Device for TunTapInterface {
         }
     }
 
-    fn transmit(&mut self) -> Option<Self::TxToken<'_>> {
+    fn transmit(&'a mut self) -> Option<Self::TxToken> {
         Some(TxToken {
             lower: self.lower.clone(),
         })

@@ -19,14 +19,14 @@ pub trait Fuzzer {
 #[allow(unused)]
 #[derive(Debug)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub struct FuzzInjector<D: Device, FTx: Fuzzer, FRx: Fuzzer> {
+pub struct FuzzInjector<D: for<'a> Device<'a>, FTx: Fuzzer, FRx: Fuzzer> {
     inner: D,
     fuzz_tx: FTx,
     fuzz_rx: FRx,
 }
 
 #[allow(unused)]
-impl<D: Device, FTx: Fuzzer, FRx: Fuzzer> FuzzInjector<D, FTx, FRx> {
+impl<D: for<'a> Device<'a>, FTx: Fuzzer, FRx: Fuzzer> FuzzInjector<D, FTx, FRx> {
     /// Create a fuzz injector device.
     pub fn new(inner: D, fuzz_tx: FTx, fuzz_rx: FRx) -> FuzzInjector<D, FTx, FRx> {
         FuzzInjector {
@@ -42,17 +42,14 @@ impl<D: Device, FTx: Fuzzer, FRx: Fuzzer> FuzzInjector<D, FTx, FRx> {
     }
 }
 
-impl<D: Device, FTx, FRx> Device for FuzzInjector<D, FTx, FRx>
+impl<'a, D, FTx, FRx> Device<'a> for FuzzInjector<D, FTx, FRx>
 where
-    FTx: Fuzzer,
-    FRx: Fuzzer,
+    D: for<'b> Device<'b>,
+    FTx: Fuzzer + 'a,
+    FRx: Fuzzer + 'a,
 {
-    type RxToken<'a> = RxToken<'a, D::RxToken<'a>, FRx>
-    where
-        Self: 'a;
-    type TxToken<'a> = TxToken<'a, D::TxToken<'a>, FTx>
-    where
-        Self: 'a;
+    type RxToken = RxToken<'a, <D as Device<'a>>::RxToken, FRx>;
+    type TxToken = TxToken<'a, <D as Device<'a>>::TxToken, FTx>;
 
     fn capabilities(&self) -> DeviceCapabilities {
         let mut caps = self.inner.capabilities();
@@ -62,7 +59,7 @@ where
         caps
     }
 
-    fn receive(&mut self) -> Option<(Self::RxToken<'_>, Self::TxToken<'_>)> {
+    fn receive(&'a mut self) -> Option<(Self::RxToken, Self::TxToken)> {
         let &mut Self {
             ref mut inner,
             ref fuzz_rx,
@@ -81,7 +78,7 @@ where
         })
     }
 
-    fn transmit(&mut self) -> Option<Self::TxToken<'_>> {
+    fn transmit(&'a mut self) -> Option<Self::TxToken> {
         let &mut Self {
             ref mut inner,
             fuzz_rx: _,

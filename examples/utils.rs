@@ -155,7 +155,7 @@ pub fn parse_middleware_options<D>(
     loopback: bool,
 ) -> FaultInjector<Tracer<PcapWriter<D, Box<dyn io::Write>>>>
 where
-    D: Device,
+    D: for<'a> Device<'a>,
 {
     let drop_chance = matches
         .opt_str("drop-chance")
